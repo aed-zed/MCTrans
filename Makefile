@@ -15,6 +15,15 @@ OBJECTS = $(patsubst %.cpp,%.o,$(SOURCES))
 MCTrans++: MCTrans.o $(OBJECTS) $(HEADERS) Makefile Makefile.local
 	$(CXX) $(CXXFLAGS) -o MCTrans++ MCTrans.o $(OBJECTS) $(SUN_LINK_FLAGS) $(NETCDF_LINK_FLAGS) $(EXTRA_LD_FLAGS)
 
+PYTHON_NAME=MCTrans
+PYTHON_OUTPUT=$(PYTHON_NAME)$(shell python3-config --extension-suffix)
+
+python: $(PYTHON_OUTPUT)
+
+$(PYTHON_OUTPUT): $(OBJECTS) $(PHYSICS_OBJECTS) Python.cpp PyTransportSystem.hpp
+	$(CXX) $(CXXFLAGS) $(shell python3 -m pybind11 --includes) -shared -fPIC -o $@ PythonInterface.cpp $(OBJECTS) $(SUN_LINK_FLAGS) $(NETCDF_LINK_FLAGS) $(EXTRA_LD_FLAGS)
+
+
 MCTrans.pdf: manual/Makefile manual/MCTrans.tex manual/macros.tex manual/references.bib
 	make -C manual MCTrans.pdf
 	ln -s manual/MCTrans.pdf

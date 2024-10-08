@@ -1,9 +1,12 @@
 
+#include <sundials/sundials_context.hpp> /* sundials::Context */
 #include <arkode/arkode_arkstep.h>     /* access to ARKode func., consts. */
 #include <nvector/nvector_serial.h>    /* access to serial N_Vector       */
 #include <sunmatrix/sunmatrix_dense.h> /* access to dense SUNMatrix       */
 #include <sunlinsol/sunlinsol_dense.h> /* access to dense SUNLinearSolver */
 #include <sundials/sundials_types.h>   /* defs. of realtype, sunindextype */
+
+typedef sunrealtype realtype;
 
 // Number of equations/unknowns in system
 #define N_DIMENSIONS 2 
