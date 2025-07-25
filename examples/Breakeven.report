@@ -85,7 +85,7 @@ Fusion Triple Product
  === Reactor Output Assuming D/T Reactor Fuel === 
 Fusion Power Output as Alphas:   0.671 MW
                     as Neutrons: 2.69 MW
-Neutron Wall Loading is 0.334 MW/m^2
+Neutron Wall Loading is 0.191 MW/m^2
 Total Thermal Power Output is 4.27 MW
  === Figures of Merit === 
 	 Q_scientific (not including Tritium Breeding or efficiencies ) = 1.66

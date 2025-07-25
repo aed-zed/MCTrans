@@ -19,7 +19,7 @@
 
 
 
-int ARKode_CircuitModel( realtype t, N_Vector u, N_Vector uDot, void* voidPlasma )
+int ARKode_CircuitModel( sunrealtype t, N_Vector u, N_Vector uDot, void* voidPlasma )
 {
 	MirrorPlasma* plasmaPtr = reinterpret_cast<MirrorPlasma*>( voidPlasma );
 
@@ -126,7 +126,7 @@ void MCTransConfig::doCircuitModel( MirrorPlasma& plasma ) const
 	V_CAP( initialCondition ) = plasma.CBChargedVoltage;
 	I_CAP( initialCondition ) = 0.0; 
 
-	realtype t0 = plasma.time;
+	sunrealtype t0 = plasma.time;
 
 	void *arkMem = ARKStepCreate( nullptr, ARKode_CircuitModel, t0, initialCondition, sunctx );
 
@@ -148,7 +148,7 @@ void MCTransConfig::doCircuitModel( MirrorPlasma& plasma ) const
 	std::cerr << "Using SundialsAbsTol = " << abstol << " and SundialsRelTol = " << reltol << std::endl;
 #endif
 	ArkodeErrorWrapper( ARKodeSStolerances( arkMem, reltol, abstol ), "ARKodeSStolerances" );
-	ArkodeErrorWrapper( ARKStepSetTableNum( arkMem, IRK_SCHEME, ARKSTEP_NULL_STEPPER ), "ARKodeSetTableNum" );
+	ArkodeErrorWrapper( ARKStepSetTableNum( arkMem, IRK_SCHEME, ARKSTEP_NULL_STEPPER ), "ARKStepSetTableNum" );
 	
 	ArkodeErrorWrapper( ARKodeSetUserData( arkMem, reinterpret_cast<void*>( &plasma ) ), "ARKodeSetUserData" );
 
@@ -169,7 +169,7 @@ void MCTransConfig::doCircuitModel( MirrorPlasma& plasma ) const
 	const unsigned long MaxSteps = 1e4;
 	ArkodeErrorWrapper( ARKodeSetMaxNumSteps( arkMem, MaxSteps ), "ARKodeSetMaxNumSteps" );
 
-	realtype t,tRet = 0;	
+	sunrealtype t,tRet = 0;	
 	int errorFlag;
 
 #ifdef DEBUG
@@ -225,9 +225,9 @@ void MCTransConfig::doCircuitModel( MirrorPlasma& plasma ) const
 	}
 
 	#ifdef DEBUG
-	long nSteps = 0,nfeEvals = 0,nfiEvals = 0;
+	long nSteps = 0,IMPLICIT_PARTITION = 1,nfiEvals = 0;
 	ArkodeErrorWrapper( ARKodeGetNumSteps( arkMem, &nSteps ), "ARKGetNumSteps" );
-	ArkodeErrorWrapper( ARKStepGetNumRhsEvals( arkMem, &nfeEvals, &nfiEvals ), "ARKGetNumRhsEvals" );
+	ArkodeErrorWrapper( ARKodeGetNumRhsEvals( arkMem, IMPLICIT_PARTITION, &nfiEvals ), "ARKGetNumRhsEvals" );
 	std::cerr << "SUNDIALS Timestepping took " << nSteps << " internal timesteps resulting in " << nfiEvals << " implicit function evaluations" << std::endl;
 #endif 
 	// Teardown 

@@ -107,12 +107,16 @@ void MCTransConfig::InitialisePlasma() const
 		}
 	} else {
 		if ( InitialMach > 0.0 && InitialTemperature > 0.0 ) {
-			plasma.ElectronTemperature = InitialTemperature;
+            if( Type != SolveType::SteadyStateMachSolve  )
+                plasma.ElectronTemperature = InitialTemperature;
 			plasma.ImposedVoltage = plasma.PlasmaColumnWidth * InitialMach * plasma.SoundSpeed() * plasma.CentralCellFieldStrength;
 		}
 	}
-	plasma.ElectronTemperature = InitialTemperature;
-	plasma.IonTemperature = InitialTemperature;
+
+    if( Type != SolveType::SteadyStateMachSolve ) {
+        plasma.ElectronTemperature = InitialTemperature;
+        plasma.IonTemperature = InitialTemperature;
+    }
 	plasma.SetMachFromVoltage();
 	plasma.ComputeSteadyStateNeutrals();
 }

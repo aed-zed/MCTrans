@@ -67,7 +67,7 @@ double MirrorPlasma::DDNeutronRate() const
 	// n_e is in units of 10^20/m^3, Formulary is in particles per cc
 	// we assume n_D = n_e
 	double nD_cc = IonDensity * 1e14;
-	double NeutronRatePerCC = nD_cc * nD_cc * SigmaVelocityAverage;
+	double NeutronRatePerCC = 0.5 * nD_cc * nD_cc * SigmaVelocityAverage;
 
 	return NeutronRatePerCC * PlasmaVolume() * 1e6;
 }

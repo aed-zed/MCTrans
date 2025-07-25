@@ -239,7 +239,7 @@ void MirrorPlasma::WriteNetCDFReport(const std::map<std::string, double>* parame
 	
 	nc_output.AddScalarVariable( "RhoIon", "Ion Larmor Radius in the central cell", "m", IonLarmorRadius() );
 	nc_output.AddScalarVariable( "a", "Typical plasma scale length", "m", PlasmaColumnWidth/2.0 );
-	nc_output.AddScalarVariable( "RhoStar", "Normalised larmor radius - rho_i/a", "", PlasmaColumnWidth / ( 2.0 * IonLarmorRadius() ) );
+	nc_output.AddScalarVariable( "RhoStar", "Normalised larmor radius - rho_i/a", "", IonLarmorRadius() / ( PlasmaColumnWidth / 2.0 ) );
 
 	nc_output.AddScalarVariable( "AuxiliaryHeating", "Auxiliary electron heating.", "W", AuxiliaryHeating * 1e6 );
 

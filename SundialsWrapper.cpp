@@ -12,7 +12,7 @@ void ArkodeErrorWrapper( int errorFlag, std::string&& fName )
 	}
 }
 
-int ARKode_TemperatureSolve( realtype t, N_Vector u, N_Vector uDot, void* voidPlasma )
+int ARKode_TemperatureSolve( sunrealtype t, N_Vector u, N_Vector uDot, void* voidPlasma )
 {
 	MirrorPlasma* plasmaPtr = reinterpret_cast<MirrorPlasma*>( voidPlasma );
 
@@ -85,7 +85,7 @@ int ARKode_TemperatureSolve( realtype t, N_Vector u, N_Vector uDot, void* voidPl
 
 // In this mode, Mach Number is u(0) and T_i is u(1)
 // but we still solve both the power-balance equations by running to steady state
-int ARKode_FixedTeSolve( realtype t, N_Vector u, N_Vector F, void* voidPlasma )
+int ARKode_FixedTeSolve( sunrealtype t, N_Vector u, N_Vector F, void* voidPlasma )
 {
 	MirrorPlasma* plasmaPtr = reinterpret_cast<MirrorPlasma*>( voidPlasma );
 
@@ -121,7 +121,7 @@ void MCTransConfig::doTempSolve( MirrorPlasma& plasma ) const
 	ION_TEMPERATURE( initialCondition ) = plasma.IonTemperature;
 	ELECTRON_TEMPERATURE( initialCondition ) = plasma.ElectronTemperature;
 	
-	realtype t0 = 0;
+	sunrealtype t0 = 0;
 
 	plasma.SetTime( t0 );
 	plasma.SetMachFromVoltage();
@@ -172,7 +172,7 @@ void MCTransConfig::doTempSolve( MirrorPlasma& plasma ) const
 	const unsigned long MaxSteps = 1e5;
 	ArkodeErrorWrapper( ARKodeSetMaxNumSteps( arkMem, MaxSteps ), "ARKodeSetMaxNumSteps" );
 
-	realtype t,tRet = 0;	
+	sunrealtype t,tRet = 0;	
 	int errorFlag;
 
 #ifdef DEBUG
@@ -235,9 +235,9 @@ void MCTransConfig::doTempSolve( MirrorPlasma& plasma ) const
 	}
 
 #ifdef DEBUG
-	long nSteps = 0,nfeEvals = 0,nfiEvals = 0;
+	long nSteps = 0,IMPLICIT_PARTITION = 1,nfiEvals = 0;
 	ArkodeErrorWrapper( ARKodeGetNumSteps( arkMem, &nSteps ), "ARKGetNumSteps" );
-	ArkodeErrorWrapper( ARKStepGetNumRhsEvals( arkMem, &nfeEvals, &nfiEvals ), "ARKGetNumRhsEvals" );
+	ArkodeErrorWrapper( ARKodeGetNumRhsEvals( arkMem, IMPLICIT_PARTITION, &nfiEvals ), "ARKGetNumRhsEvals" );
 	std::cerr << "SUNDIALS Timestepping took " << nSteps << " internal timesteps resulting in " << nfiEvals << " implicit function evaluations" << std::endl;
 #endif
 
@@ -262,7 +262,7 @@ void MCTransConfig::doFixedTeSolve( MirrorPlasma& plasma ) const
 	ION_TEMPERATURE( initialCondition ) = InitialTemperature;
 	ELECTRON_TEMPERATURE( initialCondition ) = InitialTemperature;
 
-	realtype t0 = 0;
+	sunrealtype t0 = 0;
 
 	void *arkMem = ARKStepCreate( nullptr, ARKode_TemperatureSolve, t0, initialCondition, sunctx );
 
@@ -291,7 +291,7 @@ void MCTransConfig::doFixedTeSolve( MirrorPlasma& plasma ) const
 	const unsigned long MaxSteps = 1e4;
 	ArkodeErrorWrapper( ARKodeSetMaxNumSteps( arkMem, MaxSteps ), "ARKodeSetMaxNumSteps" );
 
-	realtype t,tRet;	
+	sunrealtype t,tRet;	
 	int errorFlag = ARKodeEvolve( arkMem, t, initialCondition, &tRet, ARK_NORMAL );
 	switch ( errorFlag ) {
 		case ARK_SUCCESS:
